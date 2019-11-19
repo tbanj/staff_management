@@ -1,0 +1,23 @@
+
+/* #components-form-demo-normal-login .login-form {
+  max-width: 300px;
+}
+#components-form-demo-normal-login .login-form-forgot {
+  float: right;
+}
+#components-form-demo-normal-login .login-form-button {
+  width: 100%;
+} */
+
+@import '~antd/dist/antd.css';
+
+@media (min-width: 576px){
+  .ant-col-sm-16 {
+    width: 100% !important;
+  }
+}
+
+.ant-form-item-label {
+  text-align: left !important;
+}
+

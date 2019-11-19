@@ -1,0 +1,94 @@
+@import '~antd/dist/antd.css';
+
+.trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.superAdminLine {
+  height: 6px;
+}
+
+.ant-layout {
+  background-color: #f6f9ff !important;
+}
+
+/* sidebar */
+.ant-layout-sider {
+  background-color: white !important;
+}
+
+.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+  background-color: white !important;
+}
+.ant-menu-item {
+  color: #8A94A6 !important;
+}
+
+#logoDim{
+  filter: invert(48%) sepia(13%) saturate(100%) hue-rotate(130deg) brightness(95%) contrast(80%);
+}
+
+.ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: transparent;
+  border-left: 3px solid #0C66FF;
+  font-weight: bold;
+}
+
+.ant-menu-dark .ant-menu-item-selected .anticon {
+  color: #43536F !important;
+  filter: invert(48%) sepia(13%) saturate(100%) hue-rotate(130deg) brightness(95%) contrast(80%) !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected .anticon + span {
+  color: #43536F !important;
+}
+
+
+#bottomLogout {
+  position: absolute; 
+  bottom: 0;
+}
+
+#userPostTitle{
+  color:#ACAFB1;
+}
+.userPost {
+  color: #8A94A6;
+}
+
+.logoBackground {
+  /* position: relative; */
+  height: 85px !important;
+  width: 85px !important;
+  background-image: url("/images/dashboard/Circular.svg");
+}
+
+
+/* table */
+.superAdminLineColor {
+  background:#0C66FF;
+}
+.ant-table-thead > tr > th {
+  color: #A7A7A7 !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid transparent !important;
+}
+
+
+.sidebarLogout {
+  bottom: 0;
+  width: 100% !important;
+  position: absolute !important;
+}
+
+

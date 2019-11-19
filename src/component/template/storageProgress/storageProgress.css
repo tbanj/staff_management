@@ -1,0 +1,16 @@
+#brekLine{
+    border: 0.75px solid #D8D8D8;
+}
+
+.storagetitle{
+    color: #A6AEBC;
+    font-size: 16px;
+}
+.storageColor{
+    color: #43536F;
+}
+
+.storageSize{
+    font-size: 16px;
+    font-weight: bold;
+}

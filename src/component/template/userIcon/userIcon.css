@@ -1,0 +1,17 @@
+/* super admin icon summary */
+.superAdminIcon {
+    height: 64px !important;
+    width: 64px !important;
+    border-radius: 50%;
+  }
+  .departmentBackground {
+    background-color: #B073FD;
+  }
+  
+  .memberBackground {
+    background-color: #8FD7FF;
+  }
+  
+  .iconTitleText {
+    color:#8A94A6;
+  }
