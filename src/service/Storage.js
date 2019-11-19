@@ -21,25 +21,13 @@ class Storage {
 
     getItemsFromStorage() {
         let usersList;
-        if (localStorage.getItem("usersPrunedge") === null) {
-            usersList = {};
+        if (localStorage.getItem("currentUser")) {
+            usersList = localStorage.getItem("currentUser");
             return usersList;
-        } else {
-            usersList = JSON.parse(localStorage.getItem("usersPrunedge"));
         }
-        return usersList;
+
     }
 
-    updateItemStorage(updatedItem) {
-        let usersList = JSON.parse(localStorage.getItem("usersPrunedge"));
-
-        usersList.forEach(function (item, index) {
-            if (updatedItem._id === item._id) {
-                usersList.splice(index, 1, updatedItem);
-            }
-        });
-        localStorage.setItem("usersPrunedge", JSON.stringify(usersList));
-    }
 
     deleteItemFromStorage(id) {
         let usersList = JSON.parse(localStorage.getItem("usersPrunedge"));

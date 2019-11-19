@@ -2,12 +2,11 @@ import React from 'react';
 // import antd from 'antd';
 import PropTypes from 'prop-types';
 import { Layout, Menu, Icon, Table } from 'antd';
-import UserIcon from '../template/userIcon/UserIcon';
 // import Modal from "../modal/Modal";
 import { Modal, Button } from 'antd';
-import StorageProgress from '../template/storageProgress/StorageProgress';
 import MultiForm from '../template/MultiForm';
 import './dashboard.css';
+import StaffService from '../../service/staffService';
 
 
 const { Header, Sider, Content } = Layout;
@@ -141,17 +140,17 @@ function onShowSizeChange(current, pageSize = 3) {
     console.log(current, pageSize);
 }
 
-function extractTime(day = 0) {
-    const date = new Date();
-    const transformDate = date.setDate(date.getDate() + day);
-    const extractValue = new Date(transformDate).toDateString();
-    const extractDate = extractValue.split(" ");
-    const extractTime = new Date(transformDate).toLocaleTimeString();
-    const time = extractTime.split(" ");
-    const splitTime = time.slice(0, 1);
-    const newTime = splitTime[0].split(":");
-    return `${extractDate.slice(1, 3).join(" ")}, ${newTime.slice(0, -1).join(":")} ${time[1]}`;
-}
+// function extractTime(day = 0) {
+//     const date = new Date();
+//     const transformDate = date.setDate(date.getDate() + day);
+//     const extractValue = new Date(transformDate).toDateString();
+//     const extractDate = extractValue.split(" ");
+//     const extractTime = new Date(transformDate).toLocaleTimeString();
+//     const time = extractTime.split(" ");
+//     const splitTime = time.slice(0, 1);
+//     const newTime = splitTime[0].split(":");
+//     return `${extractDate.slice(1, 3).join(" ")}, ${newTime.slice(0, -1).join(":")} ${time[1]}`;
+// }
 
 
 function onChange(pagination, filters, sorter, extra) {
@@ -166,7 +165,7 @@ class Dashboard extends React.Component {
             allStaffs: [...data],
         };
         this.child = React.createRef();
-
+        this.staffSrv = new StaffService();
     }
 
     toggle = () => {
@@ -220,15 +219,51 @@ class Dashboard extends React.Component {
         // const saveData = user;
         // delete saveData.confirm;
         console.log(user);
+        const staff = {
+            fullName: (user.firstName + ' ' + user.lastName),
+            email: user.email,
+            dob: user.birthday,
+            stateOfOrigin: user.select
+        }
+        this.createStaff(staff);
         user.detail = 'Edit Staff';
         console.log(user.user)
+
         user.stateOfOrigin = user.select[0].toUpperCase() +
             user.select.slice(1);
         const { allStaffs } = this.state
         const key = (allStaffs.length + 1).toString();
         let newStaff = [...allStaffs];
         newStaff = newStaff.concat({ key, ...user });
-        this.setState({ allStaffs: newStaff })
+        this.setState({ allStaffs: newStaff });
+        this.child.current.resetFields()
+    }
+
+    async createStaff(staff) {
+        try {
+            const res = await this.staffSrv.create(staff)
+            console.log(res);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+    imgUpload = (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        if (file) {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('staffId', '5dd460c69d20f200047e8d2c')
+            this.upload(fd)
+        }
+    }
+    async upload(fd) {
+        try {
+            const res = await this.staffSrv.uploadImg(fd);
+            console.log(res);
+        } catch (error) {
+            console.log(error.response);
+        }
     }
 
     render() {
@@ -240,8 +275,8 @@ class Dashboard extends React.Component {
                 <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
                     <div className="logo   my-5" >
                         <div className="d-flex justify-content-center">
-                            <div className="logoBackground text-center ">
-                                <img className="my-2" src="/images/dashboard/photo.PNG" alt="logo_edms" />
+                            <div className=" text-center ">
+                                <img className="my-2 img-fluid" src="https://recap-project.eu/wp-content/uploads/2017/02/default-user.jpg" alt="logo_edms" />
                             </div>
                         </div>
                         <h5 className="text-center pt-3">Jaohn Samue</h5>
@@ -295,6 +330,7 @@ class Dashboard extends React.Component {
                                         </React.Fragment>
                                         <div>
                                             <h3>All Employees</h3>
+                                            {/* <input type="file" onChange={this.imgUpload} /> */}
                                             <div className="superAdminLine superAdminLineColor col-md-1"></div>
                                             <Table columns={columns} pagination={{ onShowSizeChange: onShowSizeChange(1, 4) }} dataSource={allStaffs} onChange={onChange} scroll={{ x: 700 }}>
 
@@ -303,34 +339,7 @@ class Dashboard extends React.Component {
                                     </div>
 
 
-                                    {/* Apply Now modal */}
-                                    {/* <Modal showModal={this.state.showApplyJobModal} handleClose={this.hideModal}>
-                                        <div className="modal-content">
-                                            <div className="modal-header removeBorderModal">
-                                                <div className="clearfix">
-                                                    <span className="float-right">
-                                                        <button type="button" className="close " data-dismiss="modal">
-                                                            <span onClick={this.hideModal}>×</span>
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                                <div className="container">
-                                                    <h1 className="modal-title col-md-8 offset-md-2 fontLookTitleIm" >Staff Biodata Form</h1>
-                                                </div>
-                                            </div>
-                                            <div className="modal-body pt-5">
-                                                <div className="container">
 
-                                                    <MultiForm wrappedComponentRef={(form) => this.form = form}
-                                                        ref={this.child} checkUrl={location.pathname} stateList={stateList}
-                                                        onAddUser={this.handelAddUser} onSubmitToServer={this.onSubmitToServer} />
-
-
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </Modal> */}
 
                                     <Modal
                                         title="Add User"

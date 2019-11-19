@@ -16,7 +16,8 @@ const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
         < Route
             {...rest}
             render={props => {
-                if (!newData.email) return <Redirect to={{
+                console.log(newData)
+                if (!newData) return <Redirect to={{
                     pathname: '/',
                     state: { from: props.location }
                 }} />;

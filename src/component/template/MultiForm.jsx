@@ -186,7 +186,7 @@ export class RegistrationForm extends React.Component {
                     </Form.Item>
 
                     {/* image upload */}
-                    <Form.Item label="Upload" extra="upload an image">
+                    {/* <Form.Item label="Upload" extra="upload an image">
                         {getFieldDecorator('upload', {
                             valuePropName: 'fileList',
                             getValueFromEvent: this.normFile,
@@ -194,10 +194,10 @@ export class RegistrationForm extends React.Component {
                             <Upload name="logo" action="/upload.do" listType="picture">
                                 <Button>
                                     <Icon type="upload" /> Click to upload
-              </Button>
+                                 </Button>
                             </Upload>,
                         )}
-                    </Form.Item>
+                    </Form.Item> */}
                     <div className="py-2 pt-4">
                         <Button type="primary" htmlType="submit" className="btn-block ">
                             Add Staff

@@ -6,13 +6,10 @@ import { fetchPosts } from '../../store/actions/index';
 import * as actions from '../../store/actions/index';
 import { storeUser } from "../../service/dataService.js";
 import MultiForm from '../template/MultiForm';
-
-
-
+import { createUser } from '../../service/dataService';
 import Storage from '../../service/Storage';
 
 import 'antd/dist/antd.css';
-const data = new Storage();
 
 class Signup extends Component {
 
@@ -39,13 +36,25 @@ class Signup extends Component {
     }
 
 
+    getUserData(user) {
+        return {
+            "email": user.email,
+            "password": user.password
+        }
+    }
 
     onSubmitToServer = (user) => {
         const saveData = user;
         delete saveData.confirm;
         console.log(user);
-        storeUser(saveData).then(resp => {
-            if (resp.status === 201) {
+        const body = { email: user.email, password: user.password }
+        // this.getUserData(user)
+        this.createUser(body)
+
+        return;
+        // eslint-disable-next-line no-unreachable
+        storeUser(this.getUserData(user)).then(resp => {
+            if (resp.status === 200) {
 
                 return resp.json();
             }
@@ -54,15 +63,27 @@ class Signup extends Component {
             return;
         }).then((response) => {
             if (response) {
+                console.log(response.data)
                 toast.success(`registration successfull`);
-                data.storeItem(user);
-                if (this.props.onLoginUser) {
-                    this.props.onLoginUser(user);
-                }
+                // if (this.props.onLoginUser) {
+                //     this.props.onLoginUser(user);
+                // }
                 this.child.current.resetFields();
                 this.props.history.push("/signin");
             }
         }).catch((error) => { console.log(error); })
+    }
+    async createUser(user) {
+        try {
+            const res = await createUser(user);
+            const token = res.data.data.token;
+            localStorage.setItem('currentUser', token);
+            window.location = '/dashboard'
+            console.log(res);
+        } catch (error) {
+            console.log(error.response);
+
+        }
     }
 
     componentDidMount() {
@@ -76,8 +97,6 @@ class Signup extends Component {
                 <div data-test="signupComponent" className="container-fluid">
                     <div className="row">
                         <div className="col-md-6 py-5 mt-5">
-                            {/* <div>{this.props.users.email}</div> */}
-                            {/* <button onClick={this.getData}>{buttonText}</button> */}
                             <div className="container">
                                 <h1 className="pl-3 col-md-4">Manage your Staffs Data</h1>
                                 <p className="col-md-9 pt-3"><strong>Welcome</strong>  to  Staff Profile Web Application(STWP) is an intelligent staff management solution that helps you you bring all your staff details into one place—quickly, easily and securely.
@@ -101,8 +120,6 @@ class Signup extends Component {
                                     </div>
                                 </div>
                             </div>
-
-
 
                         </div>
 
