@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
+import { Redirect } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchPosts } from '../../store/actions/index';
 import * as actions from '../../store/actions/index';
-import { storeUser } from "../../service/dataService.js";
+import { getCurrentUser } from "../../service/userService.js";
 import MultiForm from '../template/MultiForm';
-import { createUser } from '../../service/dataService';
-import Storage from '../../service/Storage';
+import { createUser } from '../../service/userService';
 
 import 'antd/dist/antd.css';
 
@@ -22,7 +22,6 @@ class Signup extends Component {
     }
 
     fetch() {
-        console.log('dele');
         this.props.fetchPosts();
     }
 
@@ -52,35 +51,17 @@ class Signup extends Component {
         this.createUser(body)
 
         return;
-        // eslint-disable-next-line no-unreachable
-        storeUser(this.getUserData(user)).then(resp => {
-            if (resp.status === 200) {
-
-                return resp.json();
-            }
-        }, (error) => {
-            toast.error("error encounter during data fetch");
-            return;
-        }).then((response) => {
-            if (response) {
-                console.log(response.data)
-                toast.success(`registration successfull`);
-                // if (this.props.onLoginUser) {
-                //     this.props.onLoginUser(user);
-                // }
-                this.child.current.resetFields();
-                this.props.history.push("/signin");
-            }
-        }).catch((error) => { console.log(error); })
     }
     async createUser(user) {
         try {
             const res = await createUser(user);
             const token = res.data.data.token;
             localStorage.setItem('currentUser', token);
-            window.location = '/dashboard'
+            toast.success(`Signup Successful  ${user.firstName}`);
+            window.location = '/dashboard';
             console.log(res);
         } catch (error) {
+            toast.success(`unable to register, try again`)
             console.log(error.response);
 
         }
@@ -92,6 +73,7 @@ class Signup extends Component {
 
     render() {
         const { location } = this.props;
+        if (getCurrentUser()) return <Redirect to="/dashboard" />
         return (
             <React.Fragment>
                 <div data-test="signupComponent" className="container-fluid">

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
+import { Redirect } from "react-router-dom";
 import IdleTimer from 'react-idle-timer';
 import PropTypes from 'prop-types';
+import { getCurrentUser } from "../../service/userService"
 import * as actions from '../../store/actions/index';
 import Storage from '../../service/Storage.js';
 import MultiForm from '../template/MultiForm';
@@ -15,9 +17,6 @@ class Signin extends Component {
         super(props);
         this.state = {
             user: { email: "", password: "" },
-            // time: 0,
-            // checkNumber: null,
-            // active: 5000,
             timeout: 1000 * 20 * 1,
             showModal: false,
             userLoggedIn: false,
@@ -28,31 +27,6 @@ class Signin extends Component {
         this.onAction = this._onAction.bind(this)
         this.onActive = this._onActive.bind(this)
         this.onIdle = this._onIdle.bind(this)
-        // this.props.checkAuthTimeout();
-        // window.onload = function () {
-        //     var time;
-        //     window.onload = this.resetTimer;
-        //     // DOM Events
-        //     document.onmousemove = resetTimer;
-        //     document.onkeypress = resetTimer;
-
-        //     function logout() {
-        //         if(this.props.checkAuthTimeout){
-        //             this.props.checkAuthTimeout();
-        //         alert("You are now logged out.");
-        //         }
-
-        //         //location.href = 'logout.html'
-        //     }
-
-        //     function resetTimer() {
-        //         clearTimeout(time);
-        //         // time = this.props.checkAuthTimeout()
-        //         time = setTimeout(logout, 5000)
-        //         // 1000 milliseconds = 1 second
-        //     }
-
-        // }
     }
 
     _onAction(e) {
@@ -80,42 +54,8 @@ class Signin extends Component {
 
     componentDidMount() {
         console.log(this.props);
-        // window.onload = this.resetTimer;
-        // DOM Events
-        // document.onmousemove = this.handleResetActiveState;
-        // document.onkeypress = this.handleResetActiveState;
-
-        // if (this.checkNumber) {
-        //     console.log(this.checkNumber, "NUMBER")
-        //     this.props.checkAuthTimeout();
-
-        // }
     }
-    // handleInActive = () => {
-    //     let bd = clearTimeout(this.state.active);
-    //     console.log(bd);
-    //     let timeOut = this.state.active;
-    //     timeOut = setTimeout(() => {
-    //         console.log('logout');
 
-    //         this.props.checkAuthTimeout();
-
-    //     }, this.state.active);
-    // }
-    // handleResetActiveState = () => {
-    //     console.log('active');
-    //     this.setState({ active: this.state.active + 5000 })
-
-
-    //     this.handleInActive()
-    // }
-    // logout() {
-    //     alert("You are now logged out.");
-    //     this.checkNumber = 10;
-    // }
-    // resetTimer() {
-    //     console.log('move');
-    // }
 
 
 
@@ -134,6 +74,7 @@ class Signin extends Component {
     }
     render() {
         const { location, tempArr } = this.props;
+        if (getCurrentUser()) return <Redirect to="/dashboard" />
         return (
             <React.Fragment>
                 <div data-test="signinComponent" className="container-fluid">

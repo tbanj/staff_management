@@ -1,12 +1,14 @@
-import React from 'react';
-// import antd from 'antd';
+import React, { Suspense } from 'react';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { Layout, Menu, Icon, Table } from 'antd';
 // import Modal from "../modal/Modal";
 import { Modal, Button } from 'antd';
+import StaffService from '../../service/staffService';
+import { logout } from '../../service/userService';
 import MultiForm from '../template/MultiForm';
 import './dashboard.css';
-import StaffService from '../../service/staffService';
+
 
 
 const { Header, Sider, Content } = Layout;
@@ -39,7 +41,7 @@ const columns = [
                 <div className="row">
                     <div className="col-md-4">
                         <img style={{ borderRadius: '50%' }} src={record.user}
-                            alt="user" width="60" className="img-circle" />
+                            alt={record.user} width="60" className="img-circle" />
                     </div>
 
 
@@ -89,7 +91,7 @@ const columns = [
         dataIndex: 'detail',
         render: (text, record) => (
             <span>
-                <a className="btn btn-outline-success" href={`${record.firstName}`}>{record.detail}</a>
+                <a className="btn btn-outline-success" href={`/dashboard/${record._id}`}>{record.detail}</a>
             </span>
 
         ),
@@ -162,10 +164,11 @@ class Dashboard extends React.Component {
         super(props)
         this.state = {
             collapsed: false, visible: false, showApplyJobModal: false, stateList: stateOfOrigin,
-            allStaffs: [...data],
+            allStaffs: [],
         };
         this.child = React.createRef();
         this.staffSrv = new StaffService();
+        this.logOut = this.logOut.bind(this);
     }
 
     toggle = () => {
@@ -204,6 +207,11 @@ class Dashboard extends React.Component {
 
     };
 
+    logOut() {
+        logout();
+        window.location = "/";
+    }
+
     createImage(file) {
         this.image = new Image();
         var reader = new FileReader();
@@ -215,10 +223,56 @@ class Dashboard extends React.Component {
         reader.readAsDataURL(file);
     }
 
+    presentData(data) {
+        let serviceData = [];
+        const user = [...data]
+        user.forEach(element => {
+            let name = element.fullName.split(" ");
+            console.log(name[0])
+            let reform = {
+                firstName: name[0], lastName: name[1],
+                birthday: element.dob, email: element.email, stateOfOrigin: element.stateOfOrigin,
+                user: element.profilePic, _id: element._id, detail: "Edit Staff"
+            }
+            serviceData.push(reform);
+        });
+        console.log(serviceData)
+        return serviceData;
+    }
+
+    // async getStaff() {
+    //     try {
+    //         const res = await this.staffSrv.getAll();
+    //         toast("staffs list retrieved");
+
+    //         // console.log(res.data.data);
+    //         this.setState({ allStaffs: res.data.data })
+    //         // this.presentData(this.state.allStaffs)
+    //     } catch (error) {
+    //         toast.error("you are not authorised to view staffs");
+    //         console.log(error.response);
+    //     }
+    // }
+
+    getStaff() {
+
+        this.staffSrv.getAll().then((response) => {
+            if (response) {
+                console.log(response.data.data)
+                const data = response.data.data
+                this.setState({ allStaffs: this.presentData(data) });
+            }
+        },
+            (error => { console.log(error) }))
+            .catch(error => { console.log(error) })
+
+    }
+
+    componentDidMount() {
+        this.getStaff();
+    }
+
     onSubmitToServer = (user) => {
-        // const saveData = user;
-        // delete saveData.confirm;
-        console.log(user);
         const staff = {
             fullName: (user.firstName + ' ' + user.lastName),
             email: user.email,
@@ -227,8 +281,7 @@ class Dashboard extends React.Component {
         }
         this.createStaff(staff);
         user.detail = 'Edit Staff';
-        console.log(user.user)
-
+        user.user = "https://recap-project.eu/wp-content/uploads/2017/02/default-user.jpg";
         user.stateOfOrigin = user.select[0].toUpperCase() +
             user.select.slice(1);
         const { allStaffs } = this.state
@@ -236,14 +289,15 @@ class Dashboard extends React.Component {
         let newStaff = [...allStaffs];
         newStaff = newStaff.concat({ key, ...user });
         this.setState({ allStaffs: newStaff });
-        this.child.current.resetFields()
+        toast.success(`Staff with Fullname ${user.firstName} ${user.firstName} added`)
+        this.handleOk();
     }
 
     async createStaff(staff) {
         try {
-            const res = await this.staffSrv.create(staff)
-            console.log(res);
+            const res = await this.staffSrv.create(staff);
         } catch (error) {
+            toast.error(`error encounter while creating staff`)
             console.log(error.response);
         }
     }
@@ -288,17 +342,9 @@ class Dashboard extends React.Component {
                             <Icon component={() => (<img className="mb-2" src="/images/dashboard/sidebar/home_icon.svg" alt="homeIcon" />)} />
                             <span className="">Dashboard</span>
                         </Menu.Item>
-                        <Menu.Item key="2" className="my-3">
-                            <Icon component={() => (<img className="mb-2" src="/images/dashboard/sidebar/User.svg" alt="userIcon" />)} />
-                            <span className="">Audit Log</span>
-                        </Menu.Item>
-                        <Menu.Item key="3" className="my-3">
-                            <Icon component={() => (<img className="mb-2" src="/images/dashboard/sidebar/settings_icon.svg" alt="settingIcon" />)} />
-                            <span className="">Settings</span>
-                        </Menu.Item>
                         <Menu.Item key="4" className=" sidebarLogout">
                             <Icon component={() => (<img className="mb-2" src="/images/dashboard/sidebar/Left arrow round.svg" alt="leftArrowIcon" />)} />
-                            <span className="">Log Out</span>
+                            <span onClick={this.logOut} className="">Log Out</span>
                         </Menu.Item>
 
                     </Menu>
@@ -332,9 +378,14 @@ class Dashboard extends React.Component {
                                             <h3>All Employees</h3>
                                             {/* <input type="file" onChange={this.imgUpload} /> */}
                                             <div className="superAdminLine superAdminLineColor col-md-1"></div>
-                                            <Table columns={columns} pagination={{ onShowSizeChange: onShowSizeChange(1, 4) }} dataSource={allStaffs} onChange={onChange} scroll={{ x: 700 }}>
 
-                                            </Table> </div>
+
+                                            <Suspense fallback={<div><h2>Data Loading in Progress</h2></div>}>
+                                                {this.state.allStaffs.length > 1 ? <Table columns={columns} pagination={{ onShowSizeChange: onShowSizeChange(1, 4) }} dataSource={allStaffs} onChange={onChange} scroll={{ x: 700 }}>
+
+                                                </Table> : <h2>No data available yet</h2>}
+                                            </Suspense>
+                                        </div>
 
                                     </div>
 
@@ -360,7 +411,7 @@ class Dashboard extends React.Component {
                     </div>
 
                 </Layout>
-            </Layout>
+            </Layout >
         );
     }
 }
