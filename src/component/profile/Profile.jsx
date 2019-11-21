@@ -30,7 +30,9 @@ class Profile extends Component {
         this.getDatas();
     }
     render() {
-        return (<div>User Profile Implementation In Progress</div>);
+        return (<div>
+            <div className="container"></div>
+        </div>);
     }
 }
 

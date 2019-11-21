@@ -209,7 +209,7 @@ class Dashboard extends React.Component {
 
     logOut() {
         logout();
-        window.location = "/";
+        window.location = "/signin";
     }
 
     createImage(file) {
@@ -226,13 +226,13 @@ class Dashboard extends React.Component {
     presentData(data) {
         let serviceData = [];
         const user = [...data]
-        user.forEach(element => {
+        user.forEach((element, key) => {
             let name = element.fullName.split(" ");
             console.log(name[0])
             let reform = {
                 firstName: name[0], lastName: name[1],
                 birthday: element.dob, email: element.email, stateOfOrigin: element.stateOfOrigin,
-                user: element.profilePic, _id: element._id, detail: "Edit Staff"
+                user: element.profilePic, _id: element._id, detail: "Edit Staff", key: key,
             }
             serviceData.push(reform);
         });
@@ -337,7 +337,7 @@ class Dashboard extends React.Component {
                         <p className="userPost text-center">Front Desk Officer</p>
                         <p className="text-center" id="userPostTitle ">Finance</p>
                     </div>
-                    <Menu className="" theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+                    <Menu id="listRezise" className="" theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                         <Menu.Item key="1" className="my-3">
                             <Icon component={() => (<img className="mb-2" src="/images/dashboard/sidebar/home_icon.svg" alt="homeIcon" />)} />
                             <span className="">Dashboard</span>
@@ -365,10 +365,6 @@ class Dashboard extends React.Component {
                                         background: '#fff', minHeight: 280,
                                     }}>
                                     <div className=" ">
-                                        {/* <div className="text-center">
-                                            <button onClick={this.handleJobApply}
-                                                className="btn btn-outline-success btn-lg" type="button">Add Staffs</button>
-                                        </div> */}
 
                                         <React.Fragment>
                                             <Button onClick={this.showModal} style={{ float: 'right', marginTop: '10px' }} type="primary">
@@ -388,9 +384,6 @@ class Dashboard extends React.Component {
                                         </div>
 
                                     </div>
-
-
-
 
                                     <Modal
                                         title="Add User"

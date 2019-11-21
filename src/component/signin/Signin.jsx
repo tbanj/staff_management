@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { getCurrentUser } from "../../service/userService"
 import * as actions from '../../store/actions/index';
 import Storage from '../../service/Storage.js';
+import { loginUser } from '../../service/userService';
 import MultiForm from '../template/MultiForm';
 
 const data = new Storage();
@@ -17,7 +18,7 @@ class Signin extends Component {
         super(props);
         this.state = {
             user: { email: "", password: "" },
-            timeout: 1000 * 20 * 1,
+            timeout: 1000 * 120 * 1,
             showModal: false,
             userLoggedIn: false,
             isTimedOut: false
@@ -30,17 +31,17 @@ class Signin extends Component {
     }
 
     _onAction(e) {
-        console.log('user did something', e)
+        // console.log('user did something', e)
         this.setState({ isTimedOut: false })
     }
 
     _onActive(e) {
-        console.log('user is active', e)
+        // console.log('user is active', e)
         this.setState({ isTimedOut: false })
     }
 
     _onIdle(e) {
-        console.log('user is idle', e)
+        // console.log('user is idle', e)
         const isTimedOut = this.state.isTimedOut
         if (isTimedOut) {
             this.props.history.push('/')
@@ -59,19 +60,31 @@ class Signin extends Component {
 
 
 
-    fromServer(user) {
-        const serverData = data.getItemsFromStorage();
-        if (serverData.email !== user.email || serverData.password !== user.password) {
-            toast.error("invalid email or password");
-            return;
-        } else {
-            let newData = { ...serverData, loginNow: true };
-            data.clearItemsFromStorage();
-            data.storeItem(newData);
-            window.location = '/profile';
-        }
+    fromServer = (user) => {
+        console.log(user, "userlogin");
+
+        // send user data to server to verify user details 
+        this.loginUser(user);
 
     }
+
+    async loginUser(user) {
+        console.log(user)
+        try {
+
+            const res = await loginUser(user);
+
+            const token = res.data.data.token;
+            localStorage.setItem('currentUser', token);
+            toast.success(`Welcome, Good to see you`);
+            window.location = '/dashboard';
+        } catch (error) {
+            if (error.response && error.response.status === 401) { toast.error(error.response.data.message) }
+            if (error.response && error.response.status === 404) { toast.error(error.response.data.message) }
+            console.log(error.response);
+        }
+    }
+
     render() {
         const { location, tempArr } = this.props;
         if (getCurrentUser()) return <Redirect to="/dashboard" />

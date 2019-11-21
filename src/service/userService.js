@@ -14,12 +14,16 @@ export const createUser = (body) => {
     return http.post(api + '/register', body);
 }
 
+export const loginUser = (body) => {
+    console.log("hi")
+    return http.post(api + '/login', body);
+}
+
 
 export function getCurrentUser() {
     try {
         const jwt = StorageData.getItemsFromStorage()
         return jwt_decode(jwt);
-
     } catch (error) {
         return null;
     }

@@ -33,7 +33,6 @@ class StaffService {
     }
 
     staffDetail(data) {
-
         return http.get(api + `/view/${data}`);
     }
 }

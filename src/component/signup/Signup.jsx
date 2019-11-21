@@ -3,11 +3,12 @@ import { Redirect } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { createUser } from '../../service/userService';
 import { fetchPosts } from '../../store/actions/index';
 import * as actions from '../../store/actions/index';
 import { getCurrentUser } from "../../service/userService.js";
 import MultiForm from '../template/MultiForm';
-import { createUser } from '../../service/userService';
+
 
 import 'antd/dist/antd.css';
 
@@ -45,25 +46,21 @@ class Signup extends Component {
     onSubmitToServer = (user) => {
         const saveData = user;
         delete saveData.confirm;
-        console.log(user);
         const body = { email: user.email, password: user.password }
         // this.getUserData(user)
         this.createUser(body)
-
-        return;
     }
     async createUser(user) {
         try {
             const res = await createUser(user);
             const token = res.data.data.token;
             localStorage.setItem('currentUser', token);
-            toast.success(`Signup Successful  ${user.firstName}`);
+            toast.success(`Signup Successful, Welcome `);
             window.location = '/dashboard';
             console.log(res);
         } catch (error) {
-            toast.success(`unable to register, try again`)
+            if (error.response && error.response.status === 400) { toast.error(error.response.data.message) }
             console.log(error.response);
-
         }
     }
 
